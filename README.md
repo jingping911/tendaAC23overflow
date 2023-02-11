@@ -2,6 +2,8 @@
 
 ## 1.Product 
 
+![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/1.jpg)
+
 1. **product information: https://www.tenda.com.cn/** 
 2. **firmware download:https://www.tenda.com.cn/download/detail-3420.html**
 
@@ -17,13 +19,13 @@
 
 The vulnerability is in `/bin/httpd`, the function `formSetSysTime` `formGetSysTime`. The function `formSetSysTime` can set nvram val `sys.timefixper` to `v3`, which can be set through POST parameter `timePeriod`
 
-![image-20220924150554791](TendaAC21_1.assets/image-20220924150554791.png)
+![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/2.png)
 
 and in function `formGetSysTime`, the function calls `GetValue(“sys.timefixer”, v16)` to set the string to `v16` which is on the stack. So there is a stack overflow  vulnerability. 
 
 By analyzing the funtion `GetValue` and `SetValue`, the max size of the string we can get from the function `GetValue` is `0x5DC`. It’s bigger than the size of `v16`, so there will be a bufferoverflow vulnerability. 
 
-![image-20220924150700022](TendaAC21_1.assets/image-20220924150700022.png)
+![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/3.png)
 
 ## 4.poc
 
@@ -62,7 +64,7 @@ Connection: close
 
 ```
 
-![image-20220924150332605](TendaAC21_1.assets/image-20220924150332605.png)
+![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/4.png)
 
 ----
 
