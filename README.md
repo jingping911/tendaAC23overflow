@@ -70,6 +70,11 @@ Cookie: password=25d55ad283aa400af464c76d713c07adoikcvb
 Connection: close
 ```
 
+**By sending this poc, can achieve the effect of a denial-of-service(DOS) attack**
+**Also can write exp to get a stable root shell.**
+
+
+
 
 
 ### 5.Author
