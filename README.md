@@ -71,6 +71,7 @@ Connection: close
 ```
 
 **By sending this poc, can achieve the effect of a denial-of-service(DOS) attack**
+
 **Also can write exp to get a stable root shell.**
 
 
