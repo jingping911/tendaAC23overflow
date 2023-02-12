@@ -28,8 +28,7 @@ and in function `formGetSysToolDDNS` , the function calls `GetValue(“adv.ddns1
 so there is a buffer overflow vulnerability. 
 
 ## 4.poc
-1. You need to login and **replace the Cookie: password filed in poc**.
-2. By sending  poc1 and poc2 (remember to send poc2), it can cause dos and rce. 
+By sending  poc1 and poc2 (remember to send poc2), it can cause dos and rce. 
 
 ```
 POST /goform/SetDDNSCfg HTTP/1.1
